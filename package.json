@@ -20,7 +20,7 @@
   },
   "main": "dist/MinecraftApi.js",
   "scripts": {
-    "build": "tsc",
+    "build": "rm -Rf ./dist/* && tsc",
     "test": "jest --coverage",
     "snyk": "npm run build && snyk test",
     "prepublishOnly": "npm run build"
@@ -30,7 +30,7 @@
     "npm": ">=7.0.0"
   },
   "dependencies": {
-    "@spraxdev/node-commons": "github:SpraxDev/Node-Commons#8884679eb8238c7b849ccc71c340db2e6ed84c6b"
+    "@spraxdev/node-commons": "github:SpraxDev/Node-Commons#01e3fce2b10e22c5a6fc74ffa066b3a3c2e0c07f"
   },
   "devDependencies": {
     "@tsconfig/node16": "^1.0.2",
