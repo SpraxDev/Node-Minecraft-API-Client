@@ -1,9 +1,8 @@
 {
-  "name": "ts-template",
+  "name": "minecraft-api-client",
   "version": "0.0.1",
-  "private": true,
   "description": "",
-  "homepage": "https://github.com/SpraxDev/TS-Template#readme",
+  "homepage": "https://github.com/SpraxDev/Node-Minecraft-API-Client#readme",
   "license": "MIT",
   "keywords": [],
   "author": {
@@ -14,21 +13,17 @@
   "contributors": [],
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/SpraxDev/TS-Template.git"
+    "url": "git+https://github.com/SpraxDev/Node-Minecraft-API-Client.git"
   },
   "bugs": {
-    "url": "https://github.com/SpraxDev/TS-Template/issues"
+    "url": "https://github.com/SpraxDev/Node-Minecraft-API-Client/issues"
   },
-  "main": "dist/index.js",
+  "main": "dist/MinecraftApi.js",
   "scripts": {
     "build": "tsc",
     "test": "jest --coverage",
     "snyk": "npm run build && snyk test",
-    "dev": "nodemon --ext ts --watch ./src --exec \"ts-node src/index.ts\"",
-
-    "docker:build": "npm run build && docker build --rm -t ts-template .",
-    "docker:dev": "npm run docker:build && (docker stop ts-template;docker rm ts-template;echo '') && docker run -d --name ts-template --cpus 2 -v ts-template-dev:/app/storage/ ts-template",
-    "docker:test": "npm run docker:build && snyk container test ts-template --file=Dockerfile"
+    "prepublishOnly": "npm run build"
   },
   "engines": {
     "node": ">=16.0.0",
