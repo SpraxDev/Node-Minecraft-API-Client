@@ -30,18 +30,18 @@
     "npm": ">=7.0.0"
   },
   "dependencies": {
-    "@spraxdev/node-commons": "github:SpraxDev/Node-Commons#01e3fce2b10e22c5a6fc74ffa066b3a3c2e0c07f"
+    "@spraxdev/node-commons": "github:SpraxDev/Node-Commons#625a9b1609504f695b11e7fa859154b1d51725cd"
   },
   "devDependencies": {
     "@tsconfig/node16": "^1.0.2",
-    "@types/jest": "^27.4.0",
-    "@types/node": "^16.11.24",
+    "@types/jest": "^27.4.1",
+    "@types/node": "^16.11.26",
     "@types/superagent": "^4.1.15",
     "jest": "^27.5.1",
     "nodemon": "^2.0.15",
-    "snyk": "^1.852.0",
-    "ts-jest": "^27.1.3",
-    "ts-node": "^10.5.0",
-    "typescript": "^4.5.5"
+    "snyk": "^1.894.0",
+    "ts-jest": "^27.1.4",
+    "ts-node": "^10.7.0",
+    "typescript": "^4.6.3"
   }
 }
