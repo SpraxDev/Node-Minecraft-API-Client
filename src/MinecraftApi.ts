@@ -1,5 +1,4 @@
-import HttpClient from '@spraxdev/node-commons/dist/HttpClient';
-import superagent from 'superagent';
+import HttpClient, { HttpResponse } from '@spraxdev/node-commons/dist/HttpClient';
 
 export interface ApiEndpoint {
   url: string;
@@ -163,7 +162,7 @@ export default class MinecraftApi {
     throw new Error(`Failed to fetch UUID for '${username}'`); // TODO
   }
 
-  protected async doApiRequest(url: string, arg: string): Promise<superagent.Response & { body: Buffer }> {
+  protected async doApiRequest(url: string, arg: string): Promise<HttpResponse> {
     return this.httpClient.get(url.replaceAll('%s', arg));
   }
 
