@@ -1,6 +1,5 @@
 /// <reference types="node" />
-import HttpClient from '@spraxdev/node-commons/dist/HttpClient';
-import superagent from 'superagent';
+import HttpClient, { HttpResponse } from '@spraxdev/node-commons/dist/HttpClient';
 export interface ApiEndpoint {
     url: string;
     responseConverter?: (body: Buffer) => any;
@@ -9,7 +8,7 @@ export interface ProfileApiEndpoint extends ApiEndpoint {
     acceptsUsername?: boolean;
     responseConverter?: (body: Buffer) => MinecraftProfile;
 }
-export declare type ApiEndpoints = {
+export type ApiEndpoints = {
     profile: ProfileApiEndpoint[];
     usernameToUuid: ApiEndpoint[];
 };
@@ -37,9 +36,7 @@ export default class MinecraftApi {
     constructor(userAgent: string, apiEndPoints?: ApiEndpoints);
     getProfile(usernameOrUuid: string): Promise<MinecraftProfile | null>;
     getUuid(username: string): Promise<MinecraftUuid | null>;
-    protected doApiRequest(url: string, arg: string): Promise<superagent.Response & {
-        body: Buffer;
-    }>;
+    protected doApiRequest(url: string, arg: string): Promise<HttpResponse>;
     protected getEndpoint(type: keyof ApiEndpoints, shouldAcceptUsernames?: boolean): ApiEndpoint | null;
     protected isUrlInTimeout(url: string, type: keyof ApiEndpoints): boolean;
 }
