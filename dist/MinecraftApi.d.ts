@@ -2,6 +2,7 @@
 import HttpClient, { HttpResponse } from '@spraxdev/node-commons/dist/HttpClient';
 export interface ApiEndpoint {
     url: string;
+    ignoreTimeoutWhenNoEndpointsLeft?: boolean;
     responseConverter?: (body: Buffer) => any;
 }
 export interface ProfileApiEndpoint extends ApiEndpoint {

@@ -4,6 +4,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const HttpClient_1 = __importDefault(require("@spraxdev/node-commons/dist/HttpClient"));
+const StringUtils_1 = __importDefault(require("@spraxdev/node-commons/dist/strings/StringUtils"));
 // TODO: If an endpoint fails on its first request after timeout, the timeout time should be bigger than the previous one (fibonacci sequence?)
 // TODO: Add support for UUID -> Name History
 // TODO: Add support for 'Blocked servers' api
@@ -28,7 +29,7 @@ class MinecraftApi {
         let profile = undefined;
         let currentEndpoint = undefined;
         while (true) {
-            const newEndpoint = this.getEndpoint(endpointType, !isUuid);
+            const newEndpoint = this.getEndpoint(endpointType, !isUuid); // TODO: `ignoreTimeoutWhenNoEndpointsLeft` beachten
             if (newEndpoint == null) {
                 break;
             }
@@ -43,14 +44,23 @@ class MinecraftApi {
                     profile = (currentEndpoint.responseConverter ?? MinecraftApi.defaultResponseConverter)(httpRes.body);
                     break;
                 }
-                else if (httpRes.status == 404 || httpRes.status == 204) {
+                if (httpRes.status == 404 || httpRes.status == 204) {
                     profile = null;
                     break;
+                }
+                if (httpRes.status == 429) {
+                    const retryAfterHeader = httpRes.headers['retry-after'];
+                    if (StringUtils_1.default.isNumeric(retryAfterHeader)) {
+                        this.endpointsInTimeout[currentEndpoint.url] = Math.max(10000, retryAfterHeader * 1000);
+                    }
+                    else {
+                        this.endpointsInTimeout[currentEndpoint.url] = 10000;
+                    }
                 }
             }
             catch (err) {
                 errorsWhenDirectlyFetchingAProfile.push(`Error fetching profile from '${currentEndpoint.url}' (${err.message})`);
-                this.endpointsInTimeout[`${endpointType}_${currentEndpoint.url}`] = Date.now() + 60 * 1000; /* 1min */
+                // this.endpointsInTimeout[`${endpointType}_${currentEndpoint.url}`] = Date.now() + 1000; /* 1s */
             }
         }
         if (profile !== undefined) {
@@ -73,7 +83,7 @@ class MinecraftApi {
         while (true) {
             const newEndpoint = this.getEndpoint(endpointType);
             if (newEndpoint == null || currentEndpoint == newEndpoint) {
-                throw new Error(`No further endpoints available (${errorsWhenFetchingUuid.join('; ')})`);
+                throw new Error(`No further endpoints available (${JSON.stringify(errorsWhenFetchingUuid)})`);
             }
             currentEndpoint = newEndpoint;
             try {
@@ -88,7 +98,7 @@ class MinecraftApi {
                 }
             }
             catch (err) {
-                errorsWhenFetchingUuid.push(`Error fetching UUID from '${currentEndpoint.url}' (${err.message})`);
+                errorsWhenFetchingUuid.push(`Error fetching UUID from ${JSON.stringify({ url: currentEndpoint.url, arg: username })} (${err.message})`);
                 this.endpointsInTimeout[`${endpointType}_${currentEndpoint.url}`] = Date.now() + 60 * 1000; /* 1min */
             }
         }
@@ -134,14 +144,13 @@ class MinecraftApi {
         return true;
     }
 }
-exports.default = MinecraftApi;
 MinecraftApi.DEFAULT_ENDPOINTS = Object.freeze({
     profile: [
-        { url: 'https://api.sprax2013.de/mc/profile/%s', acceptsUsername: true },
+        { url: 'https://api.sprax2013.de/mc/profile/%s', acceptsUsername: true, ignoreTimeoutWhenNoEndpointsLeft: true },
         { url: 'https://sessionserver.mojang.com/session/minecraft/profile/%s?unsigned=false' }
     ],
     usernameToUuid: [
-        { url: 'https://api.sprax2013.de/mc/uuid/%s' },
+        { url: 'https://api.sprax2013.de/mc/uuid/%s', ignoreTimeoutWhenNoEndpointsLeft: true },
         { url: 'https://api.mojang.com/users/profiles/minecraft/%s' }
     ]
 });
@@ -150,4 +159,5 @@ MinecraftApi.OFFICIAL_ENDPOINTS_ONLY = Object.freeze({
     usernameToUuid: [{ url: 'https://api.mojang.com/users/profiles/minecraft/%s' }]
 });
 MinecraftApi.defaultResponseConverter = (body) => JSON.parse(body.toString('utf-8'));
+exports.default = MinecraftApi;
 //# sourceMappingURL=MinecraftApi.js.map
