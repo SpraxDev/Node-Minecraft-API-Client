@@ -1,11 +1,11 @@
 {
   "extends": "@tsconfig/node16/tsconfig.json",
   "compilerOptions": {
-    "declarationMap": true,
-    "declaration": true,
-    "sourceMap": true,
     "outDir": "./dist",
-    "moduleResolution": "Node"
+
+    "declaration": true,
+    "declarationMap": true,
+    "sourceMap": true
   },
   "include": [
     "src/**/*.ts"
