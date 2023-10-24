@@ -11,8 +11,25 @@ const StringUtils_1 = __importDefault(require("@spraxdev/node-commons/dist/strin
 // TODO: Currently, when all endpoints have been tried, the first one is tried again as it is a fallback, this should not happen (either no fallback, or detect it)
 // TODO: If no UUID endpoint succeeded, try the profile ones if any supports requests by username (make sure urls are not requested twice!)
 class MinecraftApi {
+    static DEFAULT_ENDPOINTS = Object.freeze({
+        profile: [
+            { url: 'https://api.sprax2013.de/mc/profile/%s', acceptsUsername: true, ignoreTimeoutWhenNoEndpointsLeft: true },
+            { url: 'https://sessionserver.mojang.com/session/minecraft/profile/%s?unsigned=false' }
+        ],
+        usernameToUuid: [
+            { url: 'https://api.sprax2013.de/mc/uuid/%s', ignoreTimeoutWhenNoEndpointsLeft: true },
+            { url: 'https://api.mojang.com/users/profiles/minecraft/%s' }
+        ]
+    });
+    static OFFICIAL_ENDPOINTS_ONLY = Object.freeze({
+        profile: [{ url: 'https://sessionserver.mojang.com/session/minecraft/profile/%s?unsigned=false' }],
+        usernameToUuid: [{ url: 'https://api.mojang.com/users/profiles/minecraft/%s' }]
+    });
+    static defaultResponseConverter = (body) => JSON.parse(body.toString('utf-8'));
+    httpClient;
+    apiEndpoints;
+    endpointsInTimeout = {};
     constructor(userAgent, apiEndPoints = MinecraftApi.DEFAULT_ENDPOINTS) {
-        this.endpointsInTimeout = {};
         this.httpClient = new HttpClient_1.default(userAgent, {
             dontUseGlobalAgent: true,
             defaultHeaders: { Accept: 'application/json' }
@@ -144,20 +161,5 @@ class MinecraftApi {
         return true;
     }
 }
-MinecraftApi.DEFAULT_ENDPOINTS = Object.freeze({
-    profile: [
-        { url: 'https://api.sprax2013.de/mc/profile/%s', acceptsUsername: true, ignoreTimeoutWhenNoEndpointsLeft: true },
-        { url: 'https://sessionserver.mojang.com/session/minecraft/profile/%s?unsigned=false' }
-    ],
-    usernameToUuid: [
-        { url: 'https://api.sprax2013.de/mc/uuid/%s', ignoreTimeoutWhenNoEndpointsLeft: true },
-        { url: 'https://api.mojang.com/users/profiles/minecraft/%s' }
-    ]
-});
-MinecraftApi.OFFICIAL_ENDPOINTS_ONLY = Object.freeze({
-    profile: [{ url: 'https://sessionserver.mojang.com/session/minecraft/profile/%s?unsigned=false' }],
-    usernameToUuid: [{ url: 'https://api.mojang.com/users/profiles/minecraft/%s' }]
-});
-MinecraftApi.defaultResponseConverter = (body) => JSON.parse(body.toString('utf-8'));
 exports.default = MinecraftApi;
 //# sourceMappingURL=MinecraftApi.js.map
