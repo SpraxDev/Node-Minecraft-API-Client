@@ -68,10 +68,10 @@ class MinecraftApi {
                 if (httpRes.status == 429) {
                     const retryAfterHeader = httpRes.headers['retry-after'];
                     if (StringUtils_1.default.isNumeric(retryAfterHeader)) {
-                        this.endpointsInTimeout[currentEndpoint.url] = Math.max(10000, retryAfterHeader * 1000);
+                        this.endpointsInTimeout[currentEndpoint.url] = Math.max(10_000, retryAfterHeader * 1000);
                     }
                     else {
-                        this.endpointsInTimeout[currentEndpoint.url] = 10000;
+                        this.endpointsInTimeout[currentEndpoint.url] = 10_000;
                     }
                 }
             }

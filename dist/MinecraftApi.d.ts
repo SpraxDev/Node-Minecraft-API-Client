@@ -1,4 +1,3 @@
-/// <reference types="node" />
 import HttpClient, { HttpResponse } from '@spraxdev/node-commons/dist/HttpClient';
 export interface ApiEndpoint {
     url: string;
