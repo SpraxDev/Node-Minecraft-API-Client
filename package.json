@@ -22,7 +22,6 @@
   "scripts": {
     "build": "rm -Rf ./dist/* && tsc",
     "test": "jest --coverage",
-    "snyk": "npm run build && snyk test",
     "prepublishOnly": "npm run build"
   },
   "engines": {
@@ -38,7 +37,6 @@
     "@types/node": "^18.19.129",
     "jest": "^30.2.0",
     "nodemon": "^3.1.10",
-    "snyk": "^1.1299.1",
     "ts-jest": "^29.4.4",
     "ts-node": "^10.9.2",
     "typescript": "^5.9.3"
