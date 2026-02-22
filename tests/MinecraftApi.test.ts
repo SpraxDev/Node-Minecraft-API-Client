@@ -1,7 +1,8 @@
+import { HttpResponse } from '@spraxdev/node-commons/http';
 import MinecraftApi from '../src/MinecraftApi';
 
-const validUser = {name: 'SpraxDev', id: '955e4cf6-411c-40d1-a176-5bc8e03a8a9a'};
-const invalidUser = {name: 'SuperAdmin', id: '00000000-0000-0000-0000-000000000000'};
+const validUser = { name: 'SpraxDev', id: '955e4cf6-411c-40d1-a176-5bc8e03a8a9a' };
+const invalidUser = { name: 'SuperAdmin', id: '00000000-0000-0000-0000-000000000000' };
 
 describe('Request Minecraft profiles with default endpoints', () => {
   const doApiRequestMock = jest.fn();
@@ -9,44 +10,44 @@ describe('Request Minecraft profiles with default endpoints', () => {
   (apiClient as any).doApiRequest = doApiRequestMock;
 
   test('Request profile by username (existing)', async () => {
-    doApiRequestMock.mockResolvedValueOnce({status: 200, body: Buffer.from(JSON.stringify(validUser))});
+    doApiRequestMock.mockResolvedValueOnce(new HttpResponse(200, new Map(), Buffer.from(JSON.stringify(validUser))));
 
     await expect(apiClient.getProfile(validUser.name))
-        .resolves
-        .toEqual(validUser);
+      .resolves
+      .toEqual(validUser);
 
     expect(doApiRequestMock).toHaveBeenCalledTimes(1);
     expect(doApiRequestMock.mock.calls[0][1]).toBe(validUser.name);
   });
 
   test('Request profile by username (non existing)', async () => {
-    doApiRequestMock.mockResolvedValueOnce({status: 404, body: Buffer.from(JSON.stringify({error: 'Not found'}))});
+    doApiRequestMock.mockResolvedValueOnce(new HttpResponse(404, new Map(), Buffer.from(JSON.stringify({ error: 'Not found' }))));
 
     await expect(apiClient.getProfile(invalidUser.name))
-        .resolves
-        .toEqual(null);
+      .resolves
+      .toEqual(null);
 
     expect(doApiRequestMock).toHaveBeenCalledTimes(1);
     expect(doApiRequestMock.mock.calls[0][1]).toBe(invalidUser.name);
   });
 
   test('Request profile by UUID (existing)', async () => {
-    doApiRequestMock.mockResolvedValueOnce({status: 200, body: Buffer.from(JSON.stringify(validUser))});
+    doApiRequestMock.mockResolvedValueOnce(new HttpResponse(200, new Map(), Buffer.from(JSON.stringify(validUser))));
 
     await expect(apiClient.getProfile(validUser.id))
-        .resolves
-        .toEqual(validUser);
+      .resolves
+      .toEqual(validUser);
 
     expect(doApiRequestMock).toHaveBeenCalledTimes(1);
     expect(doApiRequestMock.mock.calls[0][1]).toBe(validUser.id.replaceAll('-', ''));
   });
 
   test('Request profile by UUID (non existing)', async () => {
-    doApiRequestMock.mockResolvedValueOnce({status: 204, body: Buffer.from(JSON.stringify({error: 'Not found'}))});
+    doApiRequestMock.mockResolvedValueOnce(new HttpResponse(204, new Map(), Buffer.from(JSON.stringify({ error: 'Not found' }))));
 
     await expect(apiClient.getProfile(invalidUser.id))
-        .resolves
-        .toEqual(null);
+      .resolves
+      .toEqual(null);
 
     expect(doApiRequestMock).toHaveBeenCalledTimes(1);
     expect(doApiRequestMock.mock.calls[0][1]).toBe(invalidUser.id.replaceAll('-', ''));
@@ -54,12 +55,12 @@ describe('Request Minecraft profiles with default endpoints', () => {
 
   test('Request profile by Username, first API errors', async () => {
     doApiRequestMock
-        .mockResolvedValue({status: 200, body: Buffer.from(JSON.stringify(validUser))})
-        .mockRejectedValueOnce(new Error('Test error'));
+      .mockResolvedValue(new HttpResponse(200, new Map(), Buffer.from(JSON.stringify(validUser))))
+      .mockRejectedValueOnce(new Error('Test error'));
 
     await expect(apiClient.getProfile(validUser.name))
-        .resolves
-        .toEqual(validUser);
+      .resolves
+      .toEqual(validUser);
 
     expect(doApiRequestMock).toHaveBeenCalledTimes(3);
 
@@ -69,8 +70,7 @@ describe('Request Minecraft profiles with default endpoints', () => {
   });
 
   test('Request profile by UUID, all APIs error', async () => {
-    doApiRequestMock
-        .mockRejectedValue(new Error('Test error'));
+    doApiRequestMock.mockRejectedValue(new Error('Test error'));
 
     const expectedId = validUser.id.replaceAll('-', '');
 
@@ -79,7 +79,8 @@ describe('Request Minecraft profiles with default endpoints', () => {
       fail('Expected error');
     } catch (err: any) {
       expect(err).toBeInstanceOf(Error);
-      expect(err.message.startsWith(`Failed to fetch profile for '${expectedId}': Error fetching profile from `)).toBeTruthy();
+      expect(err.message.startsWith(`Failed to fetch profile for '${expectedId}': Error fetching profile from `))
+        .toBeTruthy();
     }
 
     expect(doApiRequestMock).toHaveBeenCalledTimes(2);
@@ -95,11 +96,11 @@ describe('Request Minecraft profiles with official endpoints only', () => {
   (apiClient as any).doApiRequest = doApiRequestMock;
 
   test('Request profile by username (existing)', async () => {
-    doApiRequestMock.mockResolvedValue({status: 200, body: Buffer.from(JSON.stringify(validUser))});
+    doApiRequestMock.mockResolvedValue(new HttpResponse(200, new Map(), Buffer.from(JSON.stringify(validUser))));
 
     await expect(apiClient.getProfile(validUser.name))
-        .resolves
-        .toEqual(validUser);
+      .resolves
+      .toEqual(validUser);
 
     expect(doApiRequestMock).toHaveBeenCalledTimes(2);
     expect(doApiRequestMock.mock.calls[0][1]).toBe(validUser.name);
@@ -107,11 +108,11 @@ describe('Request Minecraft profiles with official endpoints only', () => {
   });
 
   test('Request profile by username (non existing)', async () => {
-    doApiRequestMock.mockResolvedValue({status: 204, body: Buffer.from(JSON.stringify(validUser))});
+    doApiRequestMock.mockResolvedValue(new HttpResponse(204, new Map(), Buffer.from(JSON.stringify(validUser))));
 
     await expect(apiClient.getProfile(invalidUser.name))
-        .resolves
-        .toEqual(null);
+      .resolves
+      .toEqual(null);
 
     expect(doApiRequestMock).toHaveBeenCalledTimes(1);
     expect(doApiRequestMock.mock.calls[0][1]).toBe(invalidUser.name);
@@ -142,11 +143,11 @@ describe('Request Minecraft UUIDs with official endpoints only', () => {
 });
 
 test('Request profile without any endpoints', async () => {
-  const apiClient = new MinecraftApi('Test-Agent', {profile: [], usernameToUuid: []});
+  const apiClient = new MinecraftApi('Test-Agent', { profile: [], usernameToUuid: [] });
 
   await expect(apiClient.getProfile(validUser.id))
-      .rejects
-      .toThrow(`No endpoint available for type 'profile' (shouldAcceptUsernames=false)`);
+    .rejects
+    .toThrow(`No endpoint available for type 'profile' (shouldAcceptUsernames=false)`);
 });
 
 describe('Endpoint timeout', () => {
@@ -164,20 +165,20 @@ describe('Endpoint timeout', () => {
     (apiClient as any).doApiRequest = doApiRequestMock;
 
     await expect(apiClient.getProfile(validUser.id))
-        .rejects
-        .toBeInstanceOf(Error);
+      .rejects
+      .toBeInstanceOf(Error);
     expect(doApiRequestMock).toHaveBeenCalledTimes(3);
 
     await expect(apiClient.getProfile(validUser.id))
-        .rejects
-        .toBeInstanceOf(Error);
+      .rejects
+      .toBeInstanceOf(Error);
     expect(doApiRequestMock).toHaveBeenCalledTimes(4);
 
     jest.advanceTimersByTime(5 * 60 * 1000); /* 5min */
 
     await expect(apiClient.getProfile(validUser.id))
-        .rejects
-        .toBeInstanceOf(Error);
+      .rejects
+      .toBeInstanceOf(Error);
 
     expect(doApiRequestMock).toHaveBeenCalledTimes(7);
   });
