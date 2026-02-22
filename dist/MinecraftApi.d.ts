@@ -1,4 +1,4 @@
-import HttpClient, { HttpResponse } from '@spraxdev/node-commons/dist/HttpClient';
+import { type HttpClient, type HttpResponse } from '@spraxdev/node-commons/http';
 export interface ApiEndpoint {
     url: string;
     ignoreTimeoutWhenNoEndpointsLeft?: boolean;

@@ -1,10 +1,7 @@
 "use strict";
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", { value: true });
-const HttpClient_1 = __importDefault(require("@spraxdev/node-commons/dist/HttpClient"));
-const StringUtils_1 = __importDefault(require("@spraxdev/node-commons/dist/strings/StringUtils"));
+const node_commons_1 = require("@spraxdev/node-commons");
+const http_1 = require("@spraxdev/node-commons/http");
 // TODO: If an endpoint fails on its first request after timeout, the timeout time should be bigger than the previous one (fibonacci sequence?)
 // TODO: Add support for UUID -> Name History
 // TODO: Add support for 'Blocked servers' api
@@ -14,26 +11,23 @@ class MinecraftApi {
     static DEFAULT_ENDPOINTS = Object.freeze({
         profile: [
             { url: 'https://api.sprax2013.de/mc/profile/%s', acceptsUsername: true, ignoreTimeoutWhenNoEndpointsLeft: true },
-            { url: 'https://sessionserver.mojang.com/session/minecraft/profile/%s?unsigned=false' }
+            { url: 'https://sessionserver.mojang.com/session/minecraft/profile/%s?unsigned=false' },
         ],
         usernameToUuid: [
             { url: 'https://api.sprax2013.de/mc/uuid/%s', ignoreTimeoutWhenNoEndpointsLeft: true },
-            { url: 'https://api.mojang.com/users/profiles/minecraft/%s' }
-        ]
+            { url: 'https://api.mojang.com/users/profiles/minecraft/%s' },
+        ],
     });
     static OFFICIAL_ENDPOINTS_ONLY = Object.freeze({
         profile: [{ url: 'https://sessionserver.mojang.com/session/minecraft/profile/%s?unsigned=false' }],
-        usernameToUuid: [{ url: 'https://api.mojang.com/users/profiles/minecraft/%s' }]
+        usernameToUuid: [{ url: 'https://api.mojang.com/users/profiles/minecraft/%s' }],
     });
     static defaultResponseConverter = (body) => JSON.parse(body.toString('utf-8'));
     httpClient;
     apiEndpoints;
     endpointsInTimeout = {};
     constructor(userAgent, apiEndPoints = MinecraftApi.DEFAULT_ENDPOINTS) {
-        this.httpClient = new HttpClient_1.default(userAgent, {
-            dontUseGlobalAgent: true,
-            defaultHeaders: { Accept: 'application/json' }
-        });
+        this.httpClient = new http_1.UndiciHttpClient(userAgent);
         this.apiEndpoints = apiEndPoints;
     }
     async getProfile(usernameOrUuid) {
@@ -57,18 +51,18 @@ class MinecraftApi {
             currentEndpoint = newEndpoint;
             try {
                 const httpRes = await this.doApiRequest(currentEndpoint.url, usernameOrUuid);
-                if (httpRes.status == 200) {
+                if (httpRes.statusCode == 200) {
                     profile = (currentEndpoint.responseConverter ?? MinecraftApi.defaultResponseConverter)(httpRes.body);
                     break;
                 }
-                if (httpRes.status == 404 || httpRes.status == 204) {
+                if (httpRes.statusCode == 404 || httpRes.statusCode == 204) {
                     profile = null;
                     break;
                 }
-                if (httpRes.status == 429) {
-                    const retryAfterHeader = httpRes.headers['retry-after'];
-                    if (StringUtils_1.default.isNumeric(retryAfterHeader)) {
-                        this.endpointsInTimeout[currentEndpoint.url] = Math.max(10_000, retryAfterHeader * 1000);
+                if (httpRes.statusCode == 429) {
+                    const retryAfterHeader = httpRes.getHeader('retry-after');
+                    if (retryAfterHeader != null && node_commons_1.StringUtils.default.isNumeric(retryAfterHeader)) {
+                        this.endpointsInTimeout[currentEndpoint.url] = Math.max(10_000, parseInt(retryAfterHeader, 10) * 1000);
                     }
                     else {
                         this.endpointsInTimeout[currentEndpoint.url] = 10_000;
@@ -105,17 +99,20 @@ class MinecraftApi {
             currentEndpoint = newEndpoint;
             try {
                 const httpRes = await this.doApiRequest(currentEndpoint.url, username);
-                if (httpRes.status == 200) {
+                if (httpRes.statusCode == 200) {
                     mcUuid = (currentEndpoint.responseConverter ?? MinecraftApi.defaultResponseConverter)(httpRes.body);
                     break;
                 }
-                else if (httpRes.status == 404 || httpRes.status == 204) {
+                else if (httpRes.statusCode == 404 || httpRes.statusCode == 204) {
                     mcUuid = null;
                     break;
                 }
             }
             catch (err) {
-                errorsWhenFetchingUuid.push(`Error fetching UUID from ${JSON.stringify({ url: currentEndpoint.url, arg: username })} (${err.message})`);
+                errorsWhenFetchingUuid.push(`Error fetching UUID from ${JSON.stringify({
+                    url: currentEndpoint.url,
+                    arg: username,
+                })} (${err.message})`);
                 this.endpointsInTimeout[`${endpointType}_${currentEndpoint.url}`] = Date.now() + 60 * 1000; /* 1min */
             }
         }
@@ -128,7 +125,7 @@ class MinecraftApi {
         throw new Error(`Failed to fetch UUID for '${username}'`); // TODO
     }
     async doApiRequest(url, arg) {
-        return this.httpClient.get(url.replaceAll('%s', arg));
+        return this.httpClient.get(url.replaceAll('%s', arg), { headers: { Accept: 'application/json' } });
     }
     getEndpoint(type, shouldAcceptUsernames = false) {
         if (this.apiEndpoints[type].length == 0) {
