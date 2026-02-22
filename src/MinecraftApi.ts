@@ -36,11 +36,11 @@ export interface MinecraftUuid {
 export default class MinecraftApi {
   static readonly DEFAULT_ENDPOINTS: ApiEndpoints = Object.freeze({
     profile: [
-      { url: 'https://api.sprax2013.de/mc/profile/%s', acceptsUsername: true, ignoreTimeoutWhenNoEndpointsLeft: true },
+      { url: 'https://api.sprax.dev/mc/v1/profile/%s', acceptsUsername: true, ignoreTimeoutWhenNoEndpointsLeft: true },
       { url: 'https://sessionserver.mojang.com/session/minecraft/profile/%s?unsigned=false' },
     ],
     usernameToUuid: [
-      { url: 'https://api.sprax2013.de/mc/uuid/%s', ignoreTimeoutWhenNoEndpointsLeft: true },
+      { url: 'https://api.sprax.dev/mc/v1/uuid/%s', ignoreTimeoutWhenNoEndpointsLeft: true },
       { url: 'https://api.mojang.com/users/profiles/minecraft/%s' },
     ],
   });
