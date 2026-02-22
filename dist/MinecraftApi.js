@@ -10,11 +10,11 @@ const http_1 = require("@spraxdev/node-commons/http");
 class MinecraftApi {
     static DEFAULT_ENDPOINTS = Object.freeze({
         profile: [
-            { url: 'https://api.sprax2013.de/mc/profile/%s', acceptsUsername: true, ignoreTimeoutWhenNoEndpointsLeft: true },
+            { url: 'https://api.sprax.dev/mc/v1/profile/%s', acceptsUsername: true, ignoreTimeoutWhenNoEndpointsLeft: true },
             { url: 'https://sessionserver.mojang.com/session/minecraft/profile/%s?unsigned=false' },
         ],
         usernameToUuid: [
-            { url: 'https://api.sprax2013.de/mc/uuid/%s', ignoreTimeoutWhenNoEndpointsLeft: true },
+            { url: 'https://api.sprax.dev/mc/v1/uuid/%s', ignoreTimeoutWhenNoEndpointsLeft: true },
             { url: 'https://api.mojang.com/users/profiles/minecraft/%s' },
         ],
     });
