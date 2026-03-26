@@ -29,13 +29,13 @@
     "npm": ">=10.0.0"
   },
   "dependencies": {
-    "@spraxdev/node-commons": "github:SpraxDev/Node-Commons#e2a639c558b7d59c032b02c5884c774154639add"
+    "@spraxdev/node-commons": "github:SpraxDev/Node-Commons#4a609c65c4a07aaae47cbeb0eb713b21e6621ceb"
   },
   "devDependencies": {
     "@tsconfig/node18": "^18.2.6",
     "@types/jest": "^30.0.0",
     "@types/node": "^18.19.130",
-    "jest": "^30.2.0",
+    "jest": "^30.3.0",
     "nodemon": "^3.1.14",
     "ts-jest": "^29.4.6",
     "ts-node": "^10.9.2",
