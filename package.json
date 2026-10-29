@@ -29,19 +29,20 @@
     "npm": ">=10.0.0"
   },
   "dependencies": {
-    "@spraxdev/node-commons": "github:SpraxDev/Node-Commons#9c8baf71cc28735f5041a901c8b514842018aaf1"
+    "@spraxdev/node-commons": "github:SpraxDev/Node-Commons#9794dd854e81a8bea792a447869157d03e4d6d9e"
   },
   "devDependencies": {
-    "@tsconfig/node24": "^24.0.4",
+    "@tsconfig/node24": "^24.0.5",
     "@types/jest": "^30.0.0",
-    "@types/node": "^24.13.3",
-    "jest": "^30.4.2",
+    "@types/node": "^24.19.2",
+    "jest": "^30.5.2",
     "nodemon": "^3.1.14",
-    "ts-jest": "^29.4.12",
+    "ts-jest": "^29.4.15",
     "ts-node": "^10.9.2",
     "typescript": "^6.0.3"
   },
   "allowScripts": {
-    "unrs-resolver@1.12.2": true
+    "unrs-resolver@1.12.2": true,
+    "@parcel/watcher": false
   }
 }
